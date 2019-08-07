@@ -1,13 +1,13 @@
-package com.maryanto.dimas.example.springbootchatwebsocket;
+package com.maryanto.dimas.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringbootChatWebsocketApplication {
+public class ChatWebSocketApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringbootChatWebsocketApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ChatWebSocketApplication.class, args);
+    }
 
 }
