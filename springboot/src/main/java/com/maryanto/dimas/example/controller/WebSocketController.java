@@ -1,30 +1,37 @@
 package com.maryanto.dimas.example.controller;
 
+import com.maryanto.dimas.example.entity.Message;
+import com.maryanto.dimas.example.entity.OutputMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.HtmlUtils;
+import org.springframework.stereotype.Controller;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Slf4j
-@RestController
+@Controller
 public class WebSocketController {
 
     @Autowired
     private SimpMessagingTemplate template;
 
     @MessageMapping("/private")
-    public void halo(@Payload String value) {
-        String data = String.format(
-                "hello from %s at %s",
-                HtmlUtils.htmlEscape(value),
-                LocalDateTime.now().toString()
-        );
-        log.info("message: {}", data);
-        this.template.convertAndSend("/chat/send", data);
+    @SendTo("/chat/send")
+    public OutputMessage halo(
+            @Payload Message message,
+            SimpMessageHeaderAccessor headerAccessor) {
+        log.info("received: {}", message);
+        OutputMessage output = new OutputMessage(
+                message.getMessage(),
+                message.getFrom(),
+                Timestamp.valueOf(LocalDateTime.now()));
+        headerAccessor.getSessionAttributes().put("username", message.getFrom());
+        return output;
     }
 }

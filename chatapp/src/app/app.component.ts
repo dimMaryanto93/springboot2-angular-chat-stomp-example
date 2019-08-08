@@ -12,16 +12,19 @@ export class AppComponent implements OnInit {
   title = 'Chat App';
   formGroup: FormGroup;
 
-  constructor(private messageService: RxStompService, private formBuilder: FormBuilder) {
+  constructor(
+    private messageService: RxStompService,
+    private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
     this.formGroup = this.formBuilder.group({
-      message: this.formBuilder.control('')
+      message: this.formBuilder.control(''),
+      from: this.formBuilder.control(Math.random().toString())
     });
     // tslint:disable-next-line:no-shadowed-variable
     this.messageService.watch('/chat/send').subscribe((message: Message) => {
-      console.log(message.body);
+      console.log(message);
     });
   }
 
