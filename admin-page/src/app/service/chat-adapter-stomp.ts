@@ -87,11 +87,8 @@ export class ChatAdapterStomp extends PagedHistoryChatAdapter {
       this.messages = [];
     });
 
-
-
-    const values = of(historyMessages);
-    console.log(`${toUserId} size ${size} page ${page}`, values);
-    return values.pipe(delay(5000));
+    console.log(`${toUserId} size ${size} page ${page}`, historyMessages);
+    return of(historyMessages).pipe(delay(5000));
   }
 
 }
