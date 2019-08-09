@@ -22,6 +22,7 @@
     "@stomp/ng2-stompjs": "^7.2.0",
     "jquery": "^3.4.1",
     "net": "^1.0.2",
+    "ng-chat": "^2.0.4",
     "rxjs": "6.4.0",
     "sockjs-client": "^1.3.0",
     "stompjs": "^2.3.3",

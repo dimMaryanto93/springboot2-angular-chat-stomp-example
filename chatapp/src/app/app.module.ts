@@ -6,6 +6,8 @@ import {AppComponent} from './app.component';
 import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from '@stomp/ng2-stompjs';
 import {stompConfig} from './service/socket-provider.service';
 import {ReactiveFormsModule} from '@angular/forms';
+import {NgChatModule} from 'ng-chat';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -14,7 +16,9 @@ import {ReactiveFormsModule} from '@angular/forms';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
+    NgChatModule
   ],
   providers: [
     {
