@@ -1,3 +1,19 @@
 spring:
   application:
     name: springboot-chat-websocket
+  datasource:
+    url: jdbc:mysql://${DATABASE_HOST:localhost}:${DATABASE_PORT:3306}/${DATABASE_NAME:chat_customer}
+    username: ${DATABASE_USERNAME:chat_customer}
+    password: ${DATABASE_PASSWORD:chat_customer}
+    driver-class-name: com.mysql.jdbc.Driver
+  flyway:
+    baseline-on-migrate: true
+    clean-on-validation-error: true
+    clean-disabled: false
+    enabled: true
+  jpa:
+    database: mysql
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true

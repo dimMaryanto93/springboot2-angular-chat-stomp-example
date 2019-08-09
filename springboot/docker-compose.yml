@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  db:
+    image: mysql:5.7
+    ports:
+    - 3304:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=chat_customer
+      - MYSQL_DATABASE=chat_customer
+      - MYSQL_USER=chat_customer
+      - MYSQL_PASSWORD=chat_customer
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - db_network
+networks:
+  db_network:
+volumes:
+  db_data:
