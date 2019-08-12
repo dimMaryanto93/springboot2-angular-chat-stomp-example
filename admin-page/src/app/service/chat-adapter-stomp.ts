@@ -1,31 +1,40 @@
-import {Message, PagedHistoryChatAdapter, ParticipantResponse} from 'ng-chat';
+import {ChatParticipantStatus, ChatParticipantType, Message, PagedHistoryChatAdapter, ParticipantResponse} from 'ng-chat';
 import {Observable, of} from 'rxjs';
-import {RxStompService} from '@stomp/ng2-stompjs';
 import {Injectable} from '@angular/core';
 import {delay} from 'rxjs/operators';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {UsersService} from './users.service';
 import {ChatEngineService} from './chat-engine.service';
+import {UsersModel} from '../model/users.model';
+import {HttpResponse} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatAdapterStomp extends PagedHistoryChatAdapter {
 
-  messages: Message[] = [];
+  private messages: Message[] = [];
+  private listFriendsUser: UsersModel[] = [];
 
-  constructor(private chatService: ChatEngineService, private userService: UsersService) {
+  constructor(private userService: UsersService, private chatService: ChatEngineService) {
     super();
   }
 
   listFriends(): Observable<ParticipantResponse[]> {
-    return of(this.userService.users.map(user => {
-      const participantResponse = new ParticipantResponse();
-
-      participantResponse.participant = user;
-      return participantResponse;
-    }));
+    this.userService.listFriends().subscribe((resp: HttpResponse<UsersModel[]>) => {
+      this.listFriendsUser = resp.body;
+      const responses: ParticipantResponse[] = this.listFriendsUser.map(user => {
+        const participantResponse = new ParticipantResponse();
+        user.status = ChatParticipantStatus.Online;
+        user.avatar = null;
+        user.participantType = ChatParticipantType.User;
+        participantResponse.participant = user;
+        return participantResponse;
+      });
+      this.friendsListChangedHandler(responses);
+    }, error => {
+      this.listFriendsUser = [];
+    });
+    return of([]);
   }
 
   getMessageHistory(toUserId: any): Observable<Message[]> {
@@ -41,8 +50,11 @@ export class ChatAdapterStomp extends PagedHistoryChatAdapter {
     const admin = this.userService.admin;
     this.chatService.messageHistory(toUserId, admin.id).subscribe(resp => {
       this.messages = resp.body;
-      for (const message of this.messages) {
-        historyMessages.push(message);
+      console.log(this.messages);
+      if (this.messages) {
+        for (const message of this.messages) {
+          historyMessages.push(message);
+        }
       }
     }, error => {
       this.messages = [];
@@ -52,9 +64,13 @@ export class ChatAdapterStomp extends PagedHistoryChatAdapter {
       const jsonObject: Message = JSON.parse(response.body);
       console.log('watch message', jsonObject);
 
-      let userRecieved = this.userService.users.find(user => user.id === jsonObject.fromId);
-      console.log('user received ', userRecieved);
-      this.onMessageReceived(userRecieved, jsonObject);
+      this.userService.findById(jsonObject.fromId).subscribe(resp => {
+        let model: UsersModel = resp.body;
+        model.participantType = ChatParticipantType.User;
+        model.avatar = null;
+        model.status = ChatParticipantStatus.Online;
+        this.onMessageReceived(model, jsonObject);
+      });
     }, error => {
       console.log('error subscribe ', error);
     });

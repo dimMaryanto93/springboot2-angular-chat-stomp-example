@@ -8,14 +8,13 @@ import com.maryanto.dimas.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 @RequestMapping("/api")
@@ -28,8 +27,17 @@ public class RestAPIController {
     private MessageRepository messageService;
 
     @GetMapping("/users/list")
-    public Iterable<User> listFriend() {
-        return this.userService.findAll();
+    public List<User> listUser(@RequestParam("admin") boolean isAdmin) {
+        return this.userService.findByAdmin(isAdmin);
+    }
+
+    @GetMapping("/users/{userId}/user")
+    public ResponseEntity<?> findUserById(@PathVariable("userId") String id) {
+        Optional<User> userOptional = userService.findById(id);
+        if (userOptional.isPresent())
+            return ok(userOptional.get());
+        else
+            return noContent().build();
     }
 
     @GetMapping("/message/history/byUser")
@@ -38,11 +46,11 @@ public class RestAPIController {
             @RequestParam(name = "toId") String userIdTo) {
         Optional<User> fromUserOptional = this.userService.findById(userIdFrom);
         if (!fromUserOptional.isPresent())
-            return ResponseEntity.noContent().build();
+            return noContent().build();
 
         Optional<User> toUserOptinal = this.userService.findById(userIdTo);
         if (!toUserOptinal.isPresent())
-            return ResponseEntity.noContent().build();
+            return noContent().build();
 
         List<MessageDTO> messagesDTO = new ArrayList<>();
         List<Message> messages = this.messageService.findByFromOrToUserId(userIdFrom, userIdTo);
@@ -55,7 +63,7 @@ public class RestAPIController {
                     data.getLastSeen())
             );
         });
-        return ResponseEntity.ok(messagesDTO);
+        return ok(messagesDTO);
     }
 
 

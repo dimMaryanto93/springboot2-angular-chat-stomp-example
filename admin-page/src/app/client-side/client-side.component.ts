@@ -3,6 +3,8 @@ import {UsersService} from '../service/users.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ChatEngineService} from '../service/chat-engine.service';
 import {Message} from 'ng-chat';
+import {UsersModel} from '../model/users.model';
+import {HttpResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-client-side',
@@ -13,8 +15,12 @@ export class ClientSideComponent implements OnInit {
 
   formGroup: FormGroup;
   historyMessage: Message[] = [];
+  listUsers: UsersModel[] = [];
 
-  constructor(private userService: UsersService, private formBuilder: FormBuilder, private chatService: ChatEngineService) {
+  constructor(
+    private userService: UsersService,
+    private formBuilder: FormBuilder,
+    private chatService: ChatEngineService) {
   }
 
   ngOnInit() {
@@ -23,19 +29,32 @@ export class ClientSideComponent implements OnInit {
       fromId: this.formBuilder.control('', [Validators.required]),
       message: this.formBuilder.control('')
     });
-    this.chatService.subscribeByUser(this.userService.users[0].id).subscribe(response => {
-      const message: Message = JSON.parse(response.body);
-      this.historyMessage.push(message);
+    this.userService.listFriends().subscribe((resp: HttpResponse<UsersModel[]>) => {
+      this.listUsers = resp.body;
     });
   }
 
   sendMessage($event: Event) {
     const message: Message = this.formGroup.value;
-    console.log('value form ', message);
+    message.dateSent = new Date();
+    this.historyMessage.push(message);
     this.chatService.sendMessage(message);
     this.formGroup.reset();
     this.formGroup.patchValue({
-      toId: this.userService.admin.id
+      toId: this.userService.admin.id,
+      fromId: message.fromId
     });
+  }
+
+  selectedChangeFrom(event: Event) {
+    this.historyMessage = [];
+    const message: Message = this.formGroup.value;
+    console.log('message from ', message.fromId);
+    if (message.fromId) {
+      this.chatService.subscribeByUser(message.fromId).subscribe(response => {
+        const data: Message = JSON.parse(response.body);
+        this.historyMessage.push(data);
+      });
+    }
   }
 }

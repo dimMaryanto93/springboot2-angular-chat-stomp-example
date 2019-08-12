@@ -1,37 +1,37 @@
 import {Injectable} from '@angular/core';
 import {ChatParticipantStatus, ChatParticipantType, IChatParticipant} from 'ng-chat';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {environment} from '../../environments/environment';
+import {UsersModel} from '../model/users.model';
 
 @Injectable({providedIn: 'root'})
 export class UsersService {
-  public users: IChatParticipant[] = [
-    {
-      participantType: ChatParticipantType.User,
-      id: 'c3ad0ffe-ba85-11e9-8337-0242ac130002',
-      displayName: 'Muhamad Yusuf',
-      avatar: null,
-      status: ChatParticipantStatus.Online
-    },
-    {
-      participantType: ChatParticipantType.User,
-      id: 'c3ad112d-ba85-11e9-8337-0242ac130002',
-      displayName: 'Abdul',
-      avatar: null,
-      status: ChatParticipantStatus.Online
-    },
-    {
-      participantType: ChatParticipantType.User,
-      id: 'c3ad1283-ba85-11e9-8337-0242ac130002',
-      displayName: 'Haris',
-      avatar: null,
-      status: ChatParticipantStatus.Offline
-    }];
+
+  constructor(private http: HttpClient) {
+  }
 
   public admin: IChatParticipant = {
     participantType: ChatParticipantType.User,
-    id: 'c3ad0c8e-ba85-11e9-8337-0242ac130002',
+    id: 'c4bb74a6-bced-11e9-8b4f-0242ac130002',
     displayName: 'Admin',
     avatar: null,
     status: ChatParticipantStatus.Online
   };
+
+  listFriends() {
+    let params = new HttpParams();
+    params = params.append('admin', 'false');
+    return this.http.get(
+      `${environment.restApi}/users/list`,
+      {params: params, observe: 'response'}
+    );
+  }
+
+  findById(userId: string) {
+    return this.http.get<UsersModel>(
+      `${environment.restApi}/users/${userId}/user`,
+      {observe: 'response'}
+    );
+  }
 
 }

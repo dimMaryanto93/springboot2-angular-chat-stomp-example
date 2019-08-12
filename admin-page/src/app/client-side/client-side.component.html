@@ -3,9 +3,9 @@
   <form [formGroup]="formGroup" (submit)="sendMessage($event)">
     <div>
       <label for="fromId">From</label>
-      <select id="fromId" name="fromId" formControlName="fromId">
+      <select id="fromId" name="fromId" formControlName="fromId" (change)="selectedChangeFrom($event)">
         <option></option>
-        <option *ngFor="let user of this.userService.users" [value]="user.id">{{user.displayName}}</option>
+        <option *ngFor="let user of this.listUsers" [value]="user.id">{{user.displayName}}</option>
       </select>
     </div>
     <div>
@@ -26,7 +26,7 @@
 <h3>History pesan</h3>
 <div>
   <ul>
-    <li *ngFor="let message of historyMessage">{{message.dateSent | date:'dd/MMM/yyyy'}} : {{message.message}} from {{message.fromId}}</li>
+    <li *ngFor="let message of historyMessage">{{message.dateSent | date:'dd/MMM/yyyy hh:mm:ss'}} : {{message.message}} from {{message.fromId}}</li>
   </ul>
 </div>
 
