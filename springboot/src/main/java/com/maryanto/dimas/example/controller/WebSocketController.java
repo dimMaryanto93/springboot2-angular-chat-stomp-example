@@ -8,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +23,12 @@ public class WebSocketController {
     @Autowired
     private MessageRepository messageService;
 
+    @Autowired
+    private SimpMessagingTemplate messageTemplate;
+
     @Transactional
-    @MessageMapping("/private")
-    @SendTo("/chat/send")
-    public MessageDTO halo(@Payload MessageDTO message, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("received: {}", message);
+    @MessageMapping("/request")
+    public void halo(@Payload MessageDTO message) {
         User userFrom = new User();
         userFrom.setId(message.getFromId());
 
@@ -43,6 +43,7 @@ public class WebSocketController {
                         Timestamp.valueOf(LocalDateTime.now()),
                         null)
         );
-        return message;
+        this.messageTemplate.convertAndSendToUser(message.getToId(), "/chat/send", message);
+        log.info("message sending: {}", message);
     }
 }

@@ -8,13 +8,5 @@
 </div>
 <h2>Here are some links to help you start: </h2>
 <hr>
-<ng-chat #ngChatInstance
-         [adapter]="adapter"
-         [userId]="userId"
-         [historyEnabled]="true"
-         [historyPageSize]="4"
-         [hideFriendsList]="false"
-         (onParticipantClicked)="onEventTriggered('ParticipantClicked triggered')"
-         (onParticipantChatOpened)="onMessageOpened($event)"
-         (onParticipantChatClosed)="onEventTriggered('ParticipantChatClosed triggered')"
-         (onMessagesSeen)="onEventTriggered('MessageSeen triggered')"></ng-chat>
+<app-admin-side></app-admin-side>
+<app-client-side></app-client-side>

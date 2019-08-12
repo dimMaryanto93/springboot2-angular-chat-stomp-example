@@ -12,8 +12,10 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 public class WebSocketBrokerConfiguration implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic/", "/chat/");
+        config.setPreservePublishOrder(true );
+        config.enableSimpleBroker("/topic/", "/chat/", "/secure/");
         config.setApplicationDestinationPrefixes("/chat");
+        config.setUserDestinationPrefix("/secure/user/");
     }
 
     @Override

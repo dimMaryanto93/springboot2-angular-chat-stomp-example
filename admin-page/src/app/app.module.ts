@@ -8,10 +8,14 @@ import {stompConfig} from './service/socket-provider.service';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NgChatModule} from 'ng-chat';
 import {HttpClientModule} from '@angular/common/http';
+import {ClientSideComponent} from './client-side/client-side.component';
+import {AdminSideComponent} from './admin-side/admin-side.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ClientSideComponent,
+    AdminSideComponent
   ],
   imports: [
     BrowserModule,
