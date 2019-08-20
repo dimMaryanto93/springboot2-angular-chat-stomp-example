@@ -12,7 +12,7 @@ export class UsersService {
 
   public admin: IChatParticipant = {
     participantType: ChatParticipantType.User,
-    id: 'c4bb74a6-bced-11e9-8b4f-0242ac130002',
+    id: 'admin',
     displayName: 'Admin',
     avatar: null,
     status: ChatParticipantStatus.Online

@@ -4,6 +4,6 @@
 
 export const environment = {
   production: false,
-  webSocketUrl: 'ws://localhost:8080/ws',
-  restApi: '/api'
+  webSocketUrl: 'ws://tabeldata.ip-dynamic.com:6061/hcare-chat/ws',
+  restApi: '/hcare-chat/api'
 };
