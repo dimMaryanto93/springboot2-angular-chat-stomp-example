@@ -1,4 +1,4 @@
-import {ChatParticipantStatus, ChatParticipantType, Message, PagedHistoryChatAdapter, ParticipantResponse} from 'ng-chat';
+import {ChatParticipantStatus, ChatParticipantType, IChatParticipant, Message, PagedHistoryChatAdapter, ParticipantResponse} from 'ng-chat';
 import {Observable, of} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {delay} from 'rxjs/operators';
@@ -19,22 +19,40 @@ export class ChatAdapterStomp extends PagedHistoryChatAdapter {
     super();
   }
 
+  mockedParticipants: IChatParticipant[] = [
+    {
+      participantType: ChatParticipantType.User,
+      id: 'primajatnika271995@gmail.com',
+      displayName: 'Prima',
+      avatar: 'https://66.media.tumblr.com/avatar_9dd9bb497b75_128.pnj',
+      status: ChatParticipantStatus.Online
+    }];
+
   listFriends(): Observable<ParticipantResponse[]> {
-    this.userService.listFriends().subscribe((resp: HttpResponse<UsersModel[]>) => {
-      this.listFriendsUser = resp.body;
-      const responses: ParticipantResponse[] = this.listFriendsUser.map(user => {
-        const participantResponse = new ParticipantResponse();
-        user.status = ChatParticipantStatus.Online;
-        user.avatar = null;
-        user.participantType = ChatParticipantType.User;
-        participantResponse.participant = user;
-        return participantResponse;
-      });
-      this.friendsListChangedHandler(responses);
-    }, error => {
-      this.listFriendsUser = [];
-    });
-    return of([]);
+    // this.userService.listFriends().subscribe((resp: HttpResponse<UsersModel[]>) => {
+    //   this.listFriendsUser = resp.body;
+    //   const responses: ParticipantResponse[] = this.listFriendsUser.map(user => {
+    //     const participantResponse = new ParticipantResponse();
+    //     user.status = ChatParticipantStatus.Online;
+    //     user.avatar = null;
+    //     user.participantType = ChatParticipantType.User;
+    //     participantResponse.participant = user;
+    //     return participantResponse;
+    //   });
+    //   this.friendsListChangedHandler(responses);
+    // }, error => {
+    //   this.listFriendsUser = [];
+    // });
+    return of(this.mockedParticipants.map(user => {
+      const participantResponse = new ParticipantResponse();
+
+      participantResponse.participant = user;
+      participantResponse.metadata = {
+        totalUnreadMessages: Math.floor(Math.random() * 10)
+      };
+
+      return participantResponse;
+    }));
   }
 
   getMessageHistory(toUserId: any): Observable<Message[]> {
@@ -64,13 +82,6 @@ export class ChatAdapterStomp extends PagedHistoryChatAdapter {
       const jsonObject: Message = JSON.parse(response.body);
       console.log('watch message', jsonObject);
 
-      this.userService.findById(jsonObject.fromId).subscribe(resp => {
-        let model: UsersModel = resp.body;
-        model.participantType = ChatParticipantType.User;
-        model.avatar = null;
-        model.status = ChatParticipantStatus.Online;
-        this.onMessageReceived(model, jsonObject);
-      });
     }, error => {
       console.log('error subscribe ', error);
     });

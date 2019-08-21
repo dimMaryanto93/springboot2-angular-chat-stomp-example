@@ -15,7 +15,7 @@ export class ClientSideComponent implements OnInit {
 
   formGroup: FormGroup;
   historyMessage: Message[] = [];
-  listUsers: UsersModel[] = [{id: 'primajatnika271995@gmail.com', avatar: null, displayName: 'Dimas Marayanto', status: null, participantType: null}];
+  listUsers: UsersModel[] = [{id: 'primajatnika271995@gmail.com', avatar: null, displayName: 'Prima', status: null, participantType: null}];
 
   constructor(
     private userService: UsersService,
